@@ -1,6 +1,6 @@
 package tictactoe;
 
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     private static void printField(char[][] ch) {
@@ -16,116 +16,48 @@ public class Main {
                 ch[2][0], ch[2][1], ch[2][2]);
     }
 
-    public static class State {
-        private boolean finished;
-        private boolean win;
-        private char winChar;
-        private boolean impossible;
-        private int winId;
-        private boolean charX;
-        private boolean charO;
-    }
+    private static void readMove(char[][] inputArr, Scanner sc) {
+        int x;
+        int y;
 
-    private static State getState(char[][] inputArr) {
-        State state = new State();
+        do {
 
-        if (inputArr[0][0] == inputArr[0][1] && inputArr[0][1] == inputArr[0][2] ||
-                inputArr[0][0] == inputArr[1][0] && inputArr[1][0] == inputArr[2][0]) {
+            try {
+                x = sc.nextInt();
+                y = sc.nextInt();
 
-            checkState(state, inputArr, 0);
-        }
-
-        if (inputArr[0][0] == inputArr[1][1] && inputArr[1][1] == inputArr[2][2] ||
-                inputArr[1][0] == inputArr[1][1] && inputArr[1][1] == inputArr[1][2] ||
-                inputArr[0][2] == inputArr[1][1] && inputArr[1][1] == inputArr[2][0] ||
-                inputArr[0][1] == inputArr[1][1] && inputArr[1][1] == inputArr[2][1]) {
-
-            checkState(state, inputArr, 1);
-        }
-
-        if (inputArr[0][2] == inputArr[1][2] && inputArr[1][2] == inputArr[2][2] ||
-                inputArr[2][0] == inputArr[2][1] && inputArr[2][1] == inputArr[2][2]) {
-
-            checkState(state, inputArr, 2);
-        }
-
-        state.impossible = count_X_O(inputArr) || state.charO && state.charX;
-        state.finished = countSpace(inputArr) == 0 || state.win;
-        state.winChar = inputArr[state.winId][state.winId];
-
-        return state;
-    }
-
-    private static void checkState(State state, char[][] inputArr, int winId) {
-        state.winId = winId;
-
-        if (inputArr[state.winId][state.winId] != ' ') {
-            state.win = true;
-
-            if (inputArr[state.winId][state.winId] == 'X') {
-                state.charX = true;
-            } else {
-                state.charO = true;
-            }
-        }
-    }
-
-    private static boolean count_X_O(char[][] inputArr) {
-        int X = 0;
-        int O = 0;
-
-        for (char[] chars : inputArr) {
-            for (char ch : chars) {
-                if (ch == 'X') {
-                    X++;
-                } else if (ch == 'O') {
-                    O++;
+                if (x > 3 || x < 1 || y > 3 || y < 1) {
+                    System.out.println("Coordinates should be from 1 to 3!");
+                } else if (inputArr[x - 1][y - 1] != ' ' &&
+                        inputArr[x - 1][y - 1] != '_') {
+                    System.out.println("This cell is occupied! Choose another one!");
+                } else {
+                    break;
                 }
+            } catch (InputMismatchException e) {
+                System.out.println("You should enter numbers!");
             }
-        }
 
-        return Math.abs(X - O) > 1;
-    }
+        } while (true);
 
-    private static int countSpace(char[][] inputArr) {
-        int count = 0;
-
-        for (char[] chars : inputArr) {
-            for (char ch : chars) {
-                if (ch == ' ' || ch == '_') {
-                    count++;
-                }
-            }
-        }
-
-        return count;
-    }
-
-    private static void printState(State state) {
-        if (state.impossible) {
-            System.out.println("Impossible");
-        } else if (!state.finished) {
-            System.out.println("Game not finished");
-        } else if (!state.win) {
-            System.out.println("Draw");
-        } else {
-            System.out.println(state.winChar + " wins");
-        }
+        inputArr[x - 1][y - 1] = 'X';
     }
 
     public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        char[] input = sc.next().toCharArray();
-        char[][] arr = new char[3][3];
-        int count = 0;
+        try (Scanner sc = new Scanner(System.in)) {
+            char[] input = sc.next().toCharArray();
+            char[][] arr = new char[3][3];
+            int count = 0;
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                arr[i][j] = input[count++];
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    arr[i][j] = input[count++];
+                }
             }
-        }
 
-        printField(arr);
-        printState(getState(arr));
+            printField(arr);
+            readMove(arr, sc);
+            printField(arr);
+        }
     }
 }
