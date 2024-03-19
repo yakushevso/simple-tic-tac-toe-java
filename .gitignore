@@ -1,0 +1,20 @@
+# course config files
+*.yaml
+
+# gradle
+.gradle/
+/gradle/
+/gradlew
+/gradlew.bat
+build
+out
+
+# idea config
+.idea
+
+# stages
+/Simple Tic-Tac-Toe (Java)/Welcome to the battlefield/
+/Simple Tic-Tac-Toe (Java)/The user is the gamemaster/
+/Simple Tic-Tac-Toe (Java)/What's up on the field/
+/Simple Tic-Tac-Toe (Java)/First move/
+/Simple Tic-Tac-Toe (Java)/Fight/
