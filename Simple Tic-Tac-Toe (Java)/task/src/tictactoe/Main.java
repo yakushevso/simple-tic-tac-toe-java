@@ -3,6 +3,22 @@ package tictactoe;
 import java.util.*;
 
 public class Main {
+    public static void main(String[] args) {
+        char[][] inputArr = clearField();
+        printField(inputArr);
+        startGame(inputArr);
+    }
+
+    private static char[][] clearField() {
+        char[][] arr = new char[3][3];
+
+        for (char[] row : arr) {
+            Arrays.fill(row, ' ');
+        }
+
+        return arr;
+    }
+
     private static void printField(char[][] ch) {
         System.out.printf("""
                         ---------
@@ -16,48 +32,100 @@ public class Main {
                 ch[2][0], ch[2][1], ch[2][2]);
     }
 
-    private static void readMove(char[][] inputArr, Scanner sc) {
-        int x;
-        int y;
 
-        do {
+    private static int getState(char[][] inputArr) {
+        int win = 0;
 
+        if (inputArr[0][0] == inputArr[0][1] && inputArr[0][1] == inputArr[0][2] ||
+                inputArr[0][0] == inputArr[1][0] && inputArr[1][0] == inputArr[2][0]) {
+            if (inputArr[0][0] != ' ') {
+                win = 1;
+            }
+        }
+
+        if (inputArr[0][0] == inputArr[1][1] && inputArr[1][1] == inputArr[2][2] ||
+                inputArr[1][0] == inputArr[1][1] && inputArr[1][1] == inputArr[1][2] ||
+                inputArr[0][2] == inputArr[1][1] && inputArr[1][1] == inputArr[2][0] ||
+                inputArr[0][1] == inputArr[1][1] && inputArr[1][1] == inputArr[2][1]) {
+            if (inputArr[1][1] != ' ') {
+                win = 2;
+            }
+        }
+
+        if (inputArr[0][2] == inputArr[1][2] && inputArr[1][2] == inputArr[2][2] ||
+                inputArr[2][0] == inputArr[2][1] && inputArr[2][1] == inputArr[2][2]) {
+
+            if (inputArr[2][2] != ' ') {
+                win = 3;
+            }
+        }
+
+        return win;
+    }
+
+    private static int countSpace(char[][] inputArr) {
+        int count = 0;
+
+        for (char[] chars : inputArr) {
+            for (char ch : chars) {
+                if (ch == ' ') {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    private static void printState(char[][] inputArr, int win) {
+        if (countSpace(inputArr) == 0 && win == 0) {
+            System.out.println("Draw");
+        } else if (win > 0) {
+            System.out.println(inputArr[win - 1][win - 1] + " wins");
+        }
+    }
+
+    private static void readMove(char[][] inputArr, char moveChar, Scanner sc) {
+        int x, y;
+
+        while (true) {
+            System.out.print("Enter the coordinates: ");
             try {
                 x = sc.nextInt();
                 y = sc.nextInt();
-
-                if (x > 3 || x < 1 || y > 3 || y < 1) {
-                    System.out.println("Coordinates should be from 1 to 3!");
-                } else if (inputArr[x - 1][y - 1] != ' ' &&
-                        inputArr[x - 1][y - 1] != '_') {
-                    System.out.println("This cell is occupied! Choose another one!");
-                } else {
-                    break;
-                }
             } catch (InputMismatchException e) {
+                sc.nextLine();
                 System.out.println("You should enter numbers!");
+                continue;
             }
 
-        } while (true);
-
-        inputArr[x - 1][y - 1] = 'X';
+            if (x > 3 || x < 1 || y > 3 || y < 1) {
+                System.out.println("Coordinates should be from 1 to 3!");
+            } else if (inputArr[x - 1][y - 1] != ' ') {
+                System.out.println("This cell is occupied! Choose another one!");
+            } else {
+                inputArr[x - 1][y - 1] = moveChar;
+                break;
+            }
+        }
     }
 
-    public static void main(String[] args) {
+    private static void startGame(char[][] inputArr) {
         try (Scanner sc = new Scanner(System.in)) {
-            char[] input = sc.next().toCharArray();
-            char[][] arr = new char[3][3];
-            int count = 0;
+            boolean playerTurn = true;
 
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    arr[i][j] = input[count++];
+            while (getState(inputArr) == 0 && countSpace(inputArr) != 0) {
+                if (playerTurn) {
+                    readMove(inputArr, 'X', sc);
+                } else {
+                    readMove(inputArr, 'O', sc);
                 }
-            }
 
-            printField(arr);
-            readMove(arr, sc);
-            printField(arr);
+                printField(inputArr);
+                playerTurn = !playerTurn;
+            }
         }
+
+        printState(inputArr, getState(inputArr));
     }
 }
